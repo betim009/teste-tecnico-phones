@@ -1,14 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import Footer from "./components/footer";
+import Header from "./components/header";
+import Section from "./components/section";
 
 type Product = {
   id: number;
   productName: string;
-  price: string;
+  price: string | bigint | any;
   photo: string;
   descriptionShort: string;
   amount: number;
 }
+
+const currency = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL'
+});
 
 export default function App() {
   const myModal = useRef<any>();
@@ -61,45 +69,51 @@ export default function App() {
 
   return (
     <>
-      <div className="grid">
-        {dataAPI.map((e) => (
-          <div key={e.id} className="card">
-            <img src={e.photo} alt='not-found thumb' className="product-image" />
-            <p>{e.productName}</p>
-            <h2>{e.price}</h2>
-            <p style={{color: 'blue'}}>frete grátis</p>
-            <button onClick={() => handleModal(e)}>COMPRAR</button>
-          </div>
-        ))}
-      </div>
+      <Header />
+      <Section />
+      <main>
 
-      <dialog ref={myModal}>
-        <div className="modal-header">
-          <button
-            onClick={() => myModal.current.close()}
-            className=""
-          >
-            X
-          </button>
+        <div className="grid">
+          {dataAPI.map((e) => (
+            <div key={e.id} className="card">
+              <img src={e.photo} alt='not-found thumb' className="product-image" />
+              <p>{e.productName}</p>
+              <h2>{currency.format(e.price)}</h2>
+              <p style={{ color: 'blue' }}>frete grátis</p>
+              <button onClick={() => handleModal(e)}>COMPRAR</button>
+            </div>
+          ))}
         </div>
 
-        <div className="modal-body">
-          <div>
-            <img src={phone?.photo} alt='not-found thumb' className="product-image" />
+        <dialog ref={myModal}>
+          <div className="modal-header">
+            <button
+              onClick={() => myModal.current.close()}
+              className=""
+            >
+              X
+            </button>
           </div>
-          <div>
-            <p>{phone?.productName}</p>
-            <p>{phone?.price * phone?.amount}</p>
-          </div>
-        </div>
 
-        <div className="modal-footer">
-          <button onClick={handleMinus} className="btn-minus">-</button>
-          <p>{phone?.amount}</p>
-          <button onClick={handlePlus} className="btn-plus">+</button>
-          <button className="btn-buy">COMPRAR</button>
-        </div>
-      </dialog>
+          <div className="modal-body">
+            <div>
+              <img src={phone?.photo} alt='not-found thumb' className="product-image" />
+            </div>
+            <div>
+              <p>{phone?.productName}</p>
+              <p>{currency.format(phone?.price * phone?.amount)}</p>
+            </div>
+          </div>
+
+          <div className="modal-footer">
+            <button onClick={handleMinus} className="btn-minus">-</button>
+            <p>{phone?.amount}</p>
+            <button onClick={handlePlus} className="btn-plus">+</button>
+            <button className="btn-buy">COMPRAR</button>
+          </div>
+        </dialog>
+      </main>
+      <Footer />
     </>
   );
 }
